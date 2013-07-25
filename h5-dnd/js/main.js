@@ -1,9 +1,11 @@
 $(document).ready(function() {
 	$('form#upload-form').multiUpload({
 		drop: 'drop-area',
-		callback : function() {
+		onSuccess : function() {
 
+		},
+		onFailure: function(e) {
+			alert(e);
 		}
-
 	});
 });
