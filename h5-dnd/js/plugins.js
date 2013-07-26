@@ -41,11 +41,11 @@
         // Drop the item in the drop box.
         jQuery.event.props.push('dataTransfer');
 
-        var imageData = {};
+        var imageData = [];
 
-        verifyAPI();
-
-initialisePlugin();
+        if (verifyAPI()) {
+            initialisePlugin($(this));
+        }
 
         function verifyAPI() {
             // Check for the various File API support.
@@ -58,15 +58,14 @@ initialisePlugin();
             }
         }
 
-        function initialisePlugin() {
-            var dropPoints = $(this).find('.' + opts.drop);
+        function initialisePlugin(form) {
+
+            var dropPoints = form.find('.' + opts.drop);
 
             if (dropPoints != undefined) {
-                console.log(opts.drop);
                 // Attach our drag and drop handlers.
                 dropPoints.bind({
                     dragover: function () {
-                        console.log("DRAG OVER");
                         $(this).addClass('hover');
                         return false;
                     },
@@ -101,10 +100,10 @@ initialisePlugin();
                         img = $('<img src="" class="uploadPic" title="" alt="" />');
 
                         var reader = new FileReader();
-                        reader.onload = function (event) {
+                        reader.onload = function (file) {
 
                             var newImg = $(img).clone().attr({
-                                src: event.target.result,
+                                src: file.target.result,
                                 title: (files[0].name),
                                 alt: (files[0].name)
                             });
@@ -114,15 +113,16 @@ initialisePlugin();
                                 newImg.width(480);
                             }
                             
-                            $(dropPoint).empty();
-                            $(dropPoint).append(newImg);
-                            $(dropPoint).removeClass('hover');
+                            $(dropPoint).empty().append(newImg).removeClass('hover');
+
+                            imageData.push({name: file.name, value : this.result});
+                            console.log(imageData);
                         };
                         reader.readAsDataURL(files[0]);
                      }
                      });
             } else {
-                console.error('Drop points with ID=' + opts.drop + ' not found!');
+                console.error('No drop point with ID=' + opts.drop + ' found!');
             }
         }
 
